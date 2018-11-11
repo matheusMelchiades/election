@@ -6,6 +6,7 @@ import br.edu.ulbra.election.election.output.v1.GenericOutput;
 import br.edu.ulbra.election.election.input.v1.ElectionInput;
 import br.edu.ulbra.election.election.output.v1.ElectionOutput;
 import br.edu.ulbra.election.election.repository.ElectionRepository;
+import br.edu.ulbra.election.election.repository.EstadoRepository;
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -112,10 +113,13 @@ public class ElectionService {
         if (StringUtils.isBlank("" + electionInput.getYear())){
             throw new GenericOutputException("Invalid year");
         }
-        if (StringUtils.isBlank(electionInput.getStateCode())){
+        if (StringUtils.isBlank(electionInput.getStateCode()) ||
+                (!EstadoRepository.estadoExits(electionInput.getStateCode()))) {
             throw new GenericOutputException("Invalid State code");
         }
-        if (StringUtils.isBlank(electionInput.getDescription())){
+        if (StringUtils.isBlank(electionInput.getDescription()) ||
+                (electionInput.getDescription().trim().replace(" ", "").length() < 5)
+            ){
             throw new GenericOutputException("Invalid Description");
         }
     }
