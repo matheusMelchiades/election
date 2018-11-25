@@ -6,9 +6,3 @@ create table election (
   constraint check_year check(year >= 2000 and year <=2200)
 );
 
-create table vote (
-  id integer intendity primary key,
-  electionId integer not null,
-  voterId integer not null,
-  candidateId integer not null
-);

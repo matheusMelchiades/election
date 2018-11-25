@@ -31,5 +31,8 @@ liquibase:
 info:
   app:
     name: Election
-    creator-name: Tales Bitelo Viegas
-    creator-email: tales.viegas@ulbra.br
+    creator-name: Matheus Maciel Melchiades
+    creator-email: matheusmacielmelchiades@hotmail.com
+url:
+    candidate-service: 'http://localhost:8082'
+    voter-service: 'http://localhost:8081'
