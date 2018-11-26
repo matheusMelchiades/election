@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class VoteService {
@@ -36,6 +37,25 @@ public class VoteService {
         this.candidateClientService = candidateClientService;
         this.voterClientService = voterClientService;
     }
+
+    /*************     TEST  ****************************************/
+    public List<VoteOutput> getAll() {
+        List<Vote> voteList = (List<Vote>) voteRepository.findAll();
+        return voteList.stream().map(this::toVoteOutput).collect(Collectors.toList());
+    }
+
+    public VoteOutput toVoteOutput(Vote vote) {
+        VoteOutput voteOutput = modelMapper.map(vote, VoteOutput.class);
+
+        Election election = electionRepository.findById(vote.getElection().getId()).orElse(null);
+
+
+        voteOutput.setElectionOutput(modelMapper.map(election, ElectionOutput.class));
+
+        return voteOutput;
+    }
+
+    /***************************************************************/
 
     public GenericOutput electionVote(VoteInput voteInput){
 
@@ -59,9 +79,6 @@ public class VoteService {
                 vote.setCandidateId(candidateOutput.getId());
             }
         }
-
-        System.out.println(" voto blank " + vote.getBlankVote());
-        System.out.println(" voto null vote" + vote.getNullVote());
 
         voteRepository.save(vote);
 
@@ -104,12 +121,21 @@ public class VoteService {
     }
 
     public CandidateOutput validateInput(VoteInput voteInput) {
+        List<CandidateOutput> candidateOutputList = null;
         CandidateOutput candidateOutput = new CandidateOutput();
+
         try{
-            candidateOutput = candidateClientService.getByNumberElection(voteInput.getCandidateNumber());
+            candidateOutputList = candidateClientService.getByNumberElection(voteInput.getCandidateNumber());
+
         } catch (FeignException e) {
             if(e.status() == 500) {
+                System.out.println("Not Found Candidate");
+            }
+        }
 
+        for (CandidateOutput candidate : candidateOutputList) {
+            if(candidate.getElectionOutput().getId() == voteInput.getElectionId()) {
+                candidateOutput = candidate;
             }
         }
         return candidateOutput;
