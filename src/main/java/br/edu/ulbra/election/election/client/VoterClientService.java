@@ -22,10 +22,17 @@ public class VoterClientService {
         return this.voterClient.getById(id);
     }
 
+    public VoterOutput getToken(String token) {
+        return voterClient.getToken(token);
+    }
+
     @FeignClient(value="voter-client", url="${url.voter-service}")
     private interface VoterClient {
 
         @GetMapping("/v1/voter/{id}")
         VoterOutput getById(@PathVariable(name = "id") Long id);
+
+        @GetMapping("check/{token}")
+        VoterOutput getToken(@PathVariable(name="token") String token);
     }
 }

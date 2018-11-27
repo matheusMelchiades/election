@@ -28,6 +28,7 @@ public class VoteService {
     private final VoterClientService voterClientService;
 
     private final String MESSAGE_VOTER_INVALID = "Invalid Voter";
+    private final String MESSAGE_VOTER_NOT_LOGGED = "Invalid, Voter not logged";
 
     @Autowired
     public VoteService(ModelMapper modelMapper, VoteRepository voteRepository, ElectionRepository electionRepository, CandidateClientService candidateClientService, VoterClientService voterClientService){
@@ -57,7 +58,8 @@ public class VoteService {
 
     /***************************************************************/
 
-    public GenericOutput electionVote(VoteInput voteInput){
+    public GenericOutput electionVote(String token, VoteInput voteInput){
+        validateToken(token);
 
         Election election = validateInput(voteInput.getElectionId(), voteInput);
 
@@ -85,11 +87,22 @@ public class VoteService {
         return new GenericOutput("OK");
     }
 
-    public GenericOutput multiple(List<VoteInput> voteInputList){
+    public GenericOutput multiple(String token, List<VoteInput> voteInputList){
         for (VoteInput voteInput : voteInputList){
-            this.electionVote(voteInput);
+            this.electionVote(token, voteInput);
         }
         return new GenericOutput("OK");
+    }
+
+    public void validateToken(String token) {
+        try {
+            voterClientService.getToken(token);
+        } catch (FeignException e) {
+            if(e.status() == 500) {
+                throw new GenericOutputException(MESSAGE_VOTER_NOT_LOGGED);
+            }
+        }
+
     }
 
     public Election validateInput(Long electionId, VoteInput voteInput) {
