@@ -8,4 +8,5 @@ import java.util.Optional;
 
 public interface ElectionRepository extends CrudRepository<Election, Long> {
     List<Election> findByYear(Integer year);
+    Optional<Election> findFirstByYear(Integer year);
 }

@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+@CrossOrigin
 @RestController
 @RequestMapping("/v1/vote")
 public class VoteApi {
@@ -21,11 +21,8 @@ public class VoteApi {
     }
 
 
-    /*************************** TEST ***********************************/
     @GetMapping("/")
     public List<VoteOutput> getAll() {return voteService.getAll();}
-    /*******************************************************************/
-
 
     @PutMapping("/")
     public GenericOutput electionVote(@RequestHeader(value = "x-token") String token, @RequestBody VoteInput voteInput){

@@ -58,20 +58,18 @@ public class ElectionService {
         return modelMapper.map(election, ElectionOutput.class);
     }
 
-    public List<ElectionOutput> getByYear(Integer year) {
+    public ElectionOutput getByYear(Integer year) {
         if (year == null){
             throw new GenericOutputException(MESSAGE_INVALID_ID);
         }
 
-        List<Election> elections = electionRepository.findByYear(year);
+        Election election = electionRepository.findFirstByYear(year).orElse(null);
 
-        if (elections == null ) {
+        if (election == null ) {
             throw new GenericOutputException((MESSAGE_ELECTIONS_NOT_FOUND));
         }
 
-        Type electionOutputListType = new TypeToken<List<ElectionOutput>>(){}.getType();
-
-        return modelMapper.map(elections, electionOutputListType);
+        return modelMapper.map(election, ElectionOutput.class);
     }
 
     public ElectionOutput update(Long electionId, ElectionInput electionInput) {
@@ -120,6 +118,10 @@ public class ElectionService {
                 (electionInput.getDescription().trim().replace(" ", "").length() < 5)
             ){
             throw new GenericOutputException("Invalid Description");
+        }
+
+        if( electionRepository.findFirstByYear(electionInput.getYear()).orElse(null) != null ) {
+            throw new GenericOutputException("Invalid Election, this election already registered");
         }
     }
 }

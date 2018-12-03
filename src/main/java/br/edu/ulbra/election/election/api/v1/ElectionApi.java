@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/v1/election")
 public class ElectionApi {
@@ -28,7 +29,7 @@ public class ElectionApi {
 
     @GetMapping("/year/{year}")
     @ApiOperation(value = "Get election List by year")
-    public List<ElectionOutput> getByYear(@PathVariable Integer year){
+    public ElectionOutput getByYear(@PathVariable Integer year){
         return electionService.getByYear(year);
     }
 
